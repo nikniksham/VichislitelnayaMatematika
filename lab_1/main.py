@@ -62,11 +62,11 @@ def solve_matrix(matr_orig: list, resh):
 
 matr = []
 resh = []
-with open("test/matr4.txt", "r") as f:
+with open("test/matr5.txt", "r") as f:
     lines = f.readlines()
     for line in lines:
         line = list(map(float, line.split()))
         matr.append(line[:-1])
         resh.append(line[-1])
-    print(matr, resh)
+    # print(matr, resh)
 print(solve_matrix(matr, resh))
