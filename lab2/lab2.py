@@ -1,5 +1,8 @@
 from math import sqrt
 from scipy.misc import derivative
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 dx = 0.00001
 
@@ -28,6 +31,21 @@ class Equation:
     def root_exists(self, left, right):
         return (self.func(left) * self.func(right) < 0) \
                and (derivative(self.func, left, dx) * derivative(self.func, left, dx) > 0)
+
+    def draw(self, start_x, delta=0.01, count=100):
+        x, y = [], []
+        for i in range(count):
+            x.append(start_x-delta*(i-count//2))
+            y.append(self.func(x[-1]))
+        plt.figure(figsize=(5, 2.7), layout='constrained')
+        plt.plot(x, y, label=self.text)
+        plt.plot([x[0], x[-1]], [0, 0])
+        plt.plot(start_x, self.func(start_x), 'ro')
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title("График")
+        plt.legend()
+        plt.show()
 
 
 class Method:
@@ -68,6 +86,7 @@ class MethodHalfDivision(Method):
                       f'f(a) = {f(a):.3f}, f(b) = {f(b):.3f}, f(x)={f(x):.3f}, |a-b| = {abs(a - b):.3f}')
 
             if abs(a - b) <= self.eps and abs(f(x)) <= self.eps:
+                self.eq.draw(x, 0.001, 1000)
                 return x, f(x), it
 
             if f(a) * f(x) < 0:
@@ -96,6 +115,7 @@ class MethodSecant(Method):
                 print(f'{it}: x(i-1)={prev2:.3f}, x(i)={prev1:.3f}, x(i+1)={x:.3f}, f(x(i+1))={f(x):.3f}, |x(i+1)-x(i)|={abs(x-prev1):.3f}')
 
             if abs(x-prev1) <= self.eps or abs(f(x)) <= self.eps:
+                self.eq.draw(x, 0.001, 1000)
                 return x, f(x), it
             prev2 = prev1
             prev1 = x
@@ -139,6 +159,7 @@ class MethodSimpleIteration(Method):
                       f'xk+1 = 𝜑(𝑥𝑘) = {x:.3f}, |xk - xk+1| = {diff:.3f}')
 
             if abs(f(x)) <= self.eps:
+                self.eq.draw(x, 0.001, 1000)
                 return x, f(x), it
             prev = x
 
@@ -146,6 +167,12 @@ class MethodSimpleIteration(Method):
 class System:
     def __init__(self):
         pass
+
+    def f1(self, x):
+        return sqrt(1-x**2)
+
+    def f2(self, x):
+        return -0.5+x**2
 
     def f(self, xy):
         x, y = xy
@@ -167,8 +194,26 @@ class System:
 
             cur = [self.fi1(*prev), self.fi2(*prev)]
             if abs(((cur[0] - prev[0]) ** 2 + (cur[1] - prev[1]) ** 2) ** 0.5) < eps:
+                self.draw(cur[0], 0.001, 100)
                 return cur, it
             prev = cur
+
+    def draw(self, cross_x, delta=0.01, count=100):
+        x, y = [], []
+        y2 = []
+        for i in range(count):
+            x.append(cross_x-delta*(i-count//2))
+            y.append(self.f1(x[-1]))
+            y2.append(self.f2(x[-1]))
+        plt.figure(figsize=(5, 2.7), layout='constrained')
+        plt.plot(x, y, label="первая")
+        plt.plot(x, y2, label="вторая")
+        plt.plot(cross_x, self.f1(cross_x), 'ro')
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title("График")
+        plt.legend()
+        plt.show()
 
 
 eqs = [
@@ -177,6 +222,8 @@ eqs = [
     Equation(lambda x: x**3 + 4.81*x**2 - 17.37*x + 5.38, "x**3 + 4.81*x**2 - 17.37*x + 5.38")
 ]
 methods = ["половинного деления", "секущих", "простой итерации"]
+
+# eqs[0].draw(0, 0.1)
 
 while True:
     print("Что решаем? Систему(1) или уравнение(2)?")
@@ -224,7 +271,7 @@ while True:
         # right = 0
 
         print("Введите эпсилон (пустая строка e = 0.001)")
-        eps = user_input(0, 1, True, 0.001)
+        eps = user_input(0.00000001, 1, True, 0.001)
         # eps = 0.001
 
         if method == 1:

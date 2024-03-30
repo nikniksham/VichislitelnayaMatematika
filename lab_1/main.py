@@ -31,7 +31,6 @@ def solve_matrix(matr_orig: list, resh):
     matr = copy.deepcopy(matr_orig)
     for i in range(len(resh)):
         matr[i].append(resh[i])
-
     for y in range(len(matr[0])-1):
         max_ind, max_el = 0, None
         for x in range(y, len(matr)):
@@ -41,7 +40,6 @@ def solve_matrix(matr_orig: list, resh):
         matr[y] = norm_row(matr[y], matr[y][y])
         for i in range(y+1, len(matr[0])-1):
             matr[i] = sub_row_from_row_with_coef(matr[y], matr[i], matr[i][y]/matr[y][y] if matr[y][y] != 0 else 0)
-
     # print(*matr, sep="\n")
     for i in range(len(matr)-1, -1, -1):
         otveti[i] = matr[i][-1]
@@ -52,11 +50,15 @@ def solve_matrix(matr_orig: list, resh):
         # print(otveti)
 
     # proverka
+    res = True
     for i in range(len(matr_orig)):
         su = 0
         for j in range(len(matr_orig[i])):
             su += matr_orig[i][j]*otveti[j]
-        print(round(su, 8))
+        if round(su, 6) != round(resh[i], 6):
+            res = False
+        print(round(su, 6))
+    print("Решения нет" if not res else "РЕШЕНИЕ ЕСТЬ")
     return otveti
 
 
@@ -69,4 +71,7 @@ with open("test/matr5.txt", "r") as f:
         matr.append(line[:-1])
         resh.append(line[-1])
     # print(matr, resh)
-print(solve_matrix(matr, resh))
+if find_opredelitel(matr) != 0:
+    print(solve_matrix(matr, resh))
+else:
+    print("Определитель равен нулю")
