@@ -74,11 +74,15 @@ def linear_approximation(x, y, logs=True):
         print()
 
     res = calc_s_delta(x, y, lambda x: a * x + b, logs)
-    x_s = sum(x) / n
-    y_s = sum(y) / n
-    r = sum([(x[i] - x_s) * (y[i] - y_s) for i in range(n)])
-    r = r / (sum([(x[i] - x_s) ** 2 for i in range(n)]) * sum([(y[i] - y_s) ** 2 for i in range(n)])) ** 0.5
-    res.append(r)
+    # x_s = sum(x) / n
+    # y_s = sum(y) / n
+    # r = sum([(x[i] - x_s) * (y[i] - y_s) for i in range(n)])
+    # r = r / (sum([(x[i] - x_s) ** 2 for i in range(n)]) * sum([(y[i] - y_s) ** 2 for i in range(n)])) ** 0.5
+    # res.append(r)
+
+    pirson = (n * sum([x[i]*y[i] for i in range(n)]) - sum(x)*sum(y)) / \
+             ((n*sum([xe**2 for xe in x]) - sum(x)**2) * (n*sum([ye**2 for ye in y]) - sum(y)**2))**0.5
+    res.append(pirson)
     return res
 
 
@@ -220,7 +224,7 @@ funcs = []
 approx = [linear_approximation, quadratic_approximation, cubic_approximation, exponential_approximation,
           logarithmic_approximation, degree_approximation]
 
-logs = True
+logs = False
 apri = {
     "ЛИНЕЙНАЯ АППРОКСИМАЦИЯ": True,
     "КВАДРАТИЧНАЯ АППРОКСИМАЦИЯ": True,
@@ -242,6 +246,8 @@ for i, app in enumerate(approx):
         draw_graph(x, y, [res[3]], names[i])
         s, sko, r = res[0], res[1], res[2]
         print(f"S = {s}\nСреднеквадратичное отклонение = {sko}\nR**2 = {r}")
+        if i == 0:
+            print(f"Коэффициент Пирсона = {res[-1]}")
     except Exception as exc:
         print(str(exc))
     print("-"*100)
