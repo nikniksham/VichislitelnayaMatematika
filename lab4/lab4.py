@@ -220,7 +220,7 @@ funcs = []
 approx = [linear_approximation, quadratic_approximation, cubic_approximation, exponential_approximation,
           logarithmic_approximation, degree_approximation]
 
-logs = False
+logs = True
 apri = {
     "ЛИНЕЙНАЯ АППРОКСИМАЦИЯ": True,
     "КВАДРАТИЧНАЯ АППРОКСИМАЦИЯ": True,
@@ -241,7 +241,7 @@ for i, app in enumerate(approx):
         funcs.append(res[3])
         draw_graph(x, y, [res[3]], names[i])
         s, sko, r = res[0], res[1], res[2]
-        print(f"S = {s}\nСреднее квадратичное отклонение = {sko}\nR**2 = {r}")
+        print(f"S = {s}\nСреднеквадратичное отклонение = {sko}\nR**2 = {r}")
     except Exception as exc:
         print(str(exc))
     print("-"*100)
