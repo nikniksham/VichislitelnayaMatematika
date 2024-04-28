@@ -1,11 +1,30 @@
 import sympy
 from sympy import *
 from math import log, e
-from ma
+import matplotlib.pyplot as plt
 
 
-def draw_graph(x, y, func):
-
+def draw_graph(x, y, funcs, name="График"):
+    cp = 1000
+    fc = []
+    delta = (x[-1] - x[0])/cp
+    for f in range(len(funcs)):
+        fc.append([[], []])
+        for i in range(cp):
+            fc[-1][0].append(x[0] + delta * i)
+            fc[-1][1].append(funcs[f](fc[-1][0][-1]))
+    plt.figure(figsize=(5, 2.7), layout='constrained')
+    plt.plot(x, y, label="база")
+    for f in range(len(funcs)):
+        plt.plot(fc[f][0], fc[f][1], label=f"ап {f}")
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(name)
+    ax = plt.gca()
+    ax.axhline(y=0, color='k')
+    ax.axvline(x=0, color='k')
+    plt.legend()
+    plt.show()
 
 
 def calc_s_delta(x, y, func, logs=True):
@@ -19,7 +38,7 @@ def calc_s_delta(x, y, func, logs=True):
         s += eps ** 2
         sr_zn += func(x[i])
         if logs:
-            print(f"({x[i], y[i]}), {res}, {eps}")
+            print(f"{x[i], y[i]}, {res}, {eps}")
 
     sr_zn /= n
     if logs:
@@ -29,9 +48,10 @@ def calc_s_delta(x, y, func, logs=True):
     return [s, delta, R, func]
 
 
-def make_table(func, a, b, h):
+def make_table(func, a, b, count):
     x, y = [], []
-    for i in range(int((b-a)/h)+1):
+    h = (b-a)/count
+    for i in range(count):
         x.append(a + i*h)
         y.append(func(x[-1]))
     return x, y
@@ -93,8 +113,7 @@ def quadratic_approximation(x, y, logs=True):
         print(f"a2 = {a2_resh}")
         print(f"y = {a2_resh} * x**2 + {a1_resh} * x + {a_resh}")
         print()
-
-    return calc_s_delta(x, y, lambda x: a_resh + a1_resh * x + a2_resh * x**2, logs)
+    return calc_s_delta(x, y, lambda x: a2_resh * x**2 + a1_resh * x + a_resh, logs)
 
 
 def cubic_approximation(x, y, logs=True):
@@ -140,6 +159,8 @@ def cubic_approximation(x, y, logs=True):
 
 def exponential_approximation(x, y, logs=True):
     print("ЭКСПОНЕНЦИАЛЬНАЯ АППРОКСИМАЦИЯ")
+    if min(y) <= 0:
+        raise Exception("Экспоненциальная аппроксимация работает только на положительной части оси Y")
     ln = lambda x: log(x, e)
     lny = [ln(ye) for ye in y]
     n = len(x)
@@ -155,6 +176,8 @@ def exponential_approximation(x, y, logs=True):
 
 def logarithmic_approximation(x, y, logs=True):
     print("ЛОГАРИФМИЧЕСКАЯ АППРОКСИМАЦИЯ")
+    if min(x) <= 0:
+        raise Exception("Логарифмическая аппроксимация работает только на положительной части оси X")
     ln = lambda x: log(x, e)
     lnx = [ln(xe) for xe in x]
     n = len(x)
@@ -169,6 +192,8 @@ def logarithmic_approximation(x, y, logs=True):
 
 def degree_approximation(x, y, logs=True):
     print("СТЕПЕННАЯ АППРОКСИМАЦИЯ")
+    if min(x) <= 0:
+        raise Exception("Степенная аппроксимация работает только на положительной части оси X")
     ln = lambda x: log(x, e)
     lnx = [ln(xe) for xe in x]
     lny = [ln(ye) for ye in y]
@@ -183,16 +208,42 @@ def degree_approximation(x, y, logs=True):
     return calc_s_delta(x, y, lambda x: a * x**b, logs)
 
 
-x, y = make_table(lambda x: 2*x/(x**4 + 17), 0.0001, 2, 0.2)
+user_func = "2 * x / (x**4 + 17)"
+a, b, count_points = 0.00001, 2, 1000
+x, y = make_table(lambda x: eval(user_func), a, b, count_points)
 
 # x = [57, 58, 59, 62, 64, 64, 65, 68, 69, 69, 71, 81, 83, 91]
 # y = [158, 163, 164, 165, 168, 171, 172, 175, 175, 176, 178, 182, 183, 183]
 
-logs = False
-print(linear_approximation(x, y, logs), "\n-----------------------")
-print(quadratic_approximation(x, y, logs), "\n-----------------------")
-print(cubic_approximation(x, y, logs), "\n-----------------------")
-print(exponential_approximation(x, y, logs), "\n-----------------------")
-print(logarithmic_approximation(x, y, logs), "\n-----------------------")
-print(degree_approximation(x, y, logs), "\n-----------------------")
+res_R = []
+funcs = []
+approx = [linear_approximation, quadratic_approximation, cubic_approximation, exponential_approximation,
+          logarithmic_approximation, degree_approximation]
 
+logs = False
+apri = {
+    "ЛИНЕЙНАЯ АППРОКСИМАЦИЯ": True,
+    "КВАДРАТИЧНАЯ АППРОКСИМАЦИЯ": True,
+    "КУБИЧЕСКАЯ АППРОКСИМАЦИЯ": True,
+    "ЭКСПОНЕНЦИАЛЬНАЯ АППРОКСИМАЦИЯ": True,
+    "ЛОГАРИФМИЧЕСКАЯ АППРОКСИМАЦИЯ": True,
+    "СТЕПЕННАЯ АППРОКСИМАЦИЯ": True
+}
+names = list(apri.keys())
+uch_names = []
+for i, app in enumerate(approx):
+    if not apri[names[i]]:
+        continue
+    try:
+        uch_names.append(names[i])
+        res = app(x, y, logs)
+        res_R.append(res[2])
+        funcs.append(res[3])
+        draw_graph(x, y, [res[3]], names[i])
+        print(res)
+    except Exception as exc:
+        print(str(exc))
+    print("-----------------------")
+
+# draw_graph(x, y, funcs, "Всё и сразу")
+print(f"Лучше всего с аппроксимацией справилась: {uch_names[res_R.index(max(res_R))]}")
