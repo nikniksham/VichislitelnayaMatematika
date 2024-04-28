@@ -240,10 +240,11 @@ for i, app in enumerate(approx):
         res_R.append(res[2])
         funcs.append(res[3])
         draw_graph(x, y, [res[3]], names[i])
-        print(res)
+        s, sko, r = res[0], res[1], res[2]
+        print(f"S = {s}\nСреднее квадратичное отклонение = {sko}\nR**2 = {r}")
     except Exception as exc:
         print(str(exc))
-    print("-----------------------")
+    print("-"*100)
 
 # draw_graph(x, y, funcs, "Всё и сразу")
 print(f"Лучше всего с аппроксимацией справилась: {uch_names[res_R.index(max(res_R))]}")
