@@ -213,7 +213,10 @@ def degree_approximation(x, y, logs=True):
 
 
 user_func = "2 * x / (x**4 + 17)"
-a, b, count_points = 0.00001, 2, 1000
+# user_func = "13*x**2 - 2*x + 1"
+# user_func = "ln(x)"
+# user_func = "e**(3*x - 1)"
+a, b, count_points = 0.0001, 2, 1000
 x, y = make_table(lambda x: eval(user_func), a, b, count_points)
 
 # x = [57, 58, 59, 62, 64, 64, 65, 68, 69, 69, 71, 81, 83, 91]
@@ -239,12 +242,12 @@ for i, app in enumerate(approx):
     if not apri[names[i]]:
         continue
     try:
-        uch_names.append(names[i])
         res = app(x, y, logs)
         res_R.append(res[2])
         funcs.append(res[3])
         draw_graph(x, y, [res[3]], names[i])
         s, sko, r = res[0], res[1], res[2]
+        uch_names.append(names[i])
         print(f"S = {s}\nСреднеквадратичное отклонение = {sko}\nR**2 = {r}")
         if i == 0:
             print(f"Коэффициент Пирсона = {res[-1]}")
@@ -252,5 +255,6 @@ for i, app in enumerate(approx):
         print(str(exc))
     print("-"*100)
 
+print(uch_names)
 # draw_graph(x, y, funcs, "Всё и сразу")
 print(f"Лучше всего с аппроксимацией справилась: {uch_names[res_R.index(max(res_R))]}")
