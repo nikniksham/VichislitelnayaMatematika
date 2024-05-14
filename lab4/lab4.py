@@ -212,15 +212,11 @@ def degree_approximation(x, y, logs=True):
     return calc_s_delta(x, y, lambda x: a * x**b, logs)
 
 
-user_func = "2 * x / (x**4 + 17)"
-# user_func = "13*x**2 - 2*x + 1"
-# user_func = "ln(x)"
-# user_func = "e**(3*x - 1)"
-a, b, count_points = 0.0001, 2, 1000
-x, y = make_table(lambda x: eval(user_func), a, b, count_points)
-
-# x = [57, 58, 59, 62, 64, 64, 65, 68, 69, 69, 71, 81, 83, 91]
-# y = [158, 163, 164, 165, 168, 171, 172, 175, 175, 176, 178, 182, 183, 183]
+# user_func, a, b, n = "2 * x / (x**4 + 17)", 0.0001, 2, 1000
+# user_func, a, b, n = "13*x**2 - 2*x + 1", -1, 3, 1000
+# user_func, a, b, n = "ln(x)", 0.5, 5, 100
+user_func, a, b, n = "e**(3*x - 1)", -2, 5, 1000
+x, y = make_table(lambda x: eval(user_func), a, b, n)
 
 res_R = []
 funcs = []
@@ -255,6 +251,5 @@ for i, app in enumerate(approx):
         print(str(exc))
     print("-"*100)
 
-print(uch_names)
 # draw_graph(x, y, funcs, "Всё и сразу")
 print(f"Лучше всего с аппроксимацией справилась: {uch_names[res_R.index(max(res_R))]}")
