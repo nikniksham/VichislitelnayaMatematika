@@ -79,11 +79,7 @@ def gauss(func_points, need_points):
     table = get_table(func_points[1])
     res = []
     for point in need_points:
-        mi, ip = 999999999, 0
-        for ind, el in enumerate(func_points[0]):
-            if abs(point - el) < mi:
-                mi = abs(point - el)
-                ip = ind
+        ip = len(func_points[0])//2
         t = (point - func_points[0][ip]) / h
         zsf, lr = 0 if point > func_points[0][ip] else 1, 0
         for i in range(len(table)):
@@ -94,10 +90,9 @@ def gauss(func_points, need_points):
         res.append(lr)
     return res
 
-
-points = [[1, 2, 3, 4, 5], [3, 2, 4, 5, 1]]
+# points = [[1, 2, 3, 4, 5], [3, 2, 4, 5, 1]]
 # points = [[0.1, 0.2, 0.3, 0.4, 0.5], [1.25, 12.38, 3.79, 1.44, 7.14]]
-# points = [[1, 2, 3, 4, 5], [4.7, 8.4, 12.3, 13.2, 13.9]]
+points = [[1, 2, 3, 4, 5], [4.7, 8.4, 12.3, 13.2, 13.9]]
 # points = get_points_from_func(1, 10, 11, "exp(x)*cos(x)")
 x = get_range(min(points[0]), max(points[0]), 1000, False)
 
@@ -119,6 +114,6 @@ try:
     y_gauss = gauss(points, x_gauss)
     draw_graph(points, x_gauss, y_gauss)
 except Exception as e:
-    print("Ничего удивительного, метод кал")
+    print("Ничего удивительного, метод кал (точек должно быть нечётное количество)")
     print(e)
 
