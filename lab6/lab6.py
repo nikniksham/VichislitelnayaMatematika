@@ -23,13 +23,15 @@ def get_table(ys):
 
 
 def euler_simple(sx, ex, h, y0, func, logs=True):
-    print("i\tXi\t\tYi\t\t\tF(Xi,Yi)")
+    if logs:
+        print("i\tXi\t\tYi\t\t\tF(Xi,Yi)")
     res = [[], []]
     xi, yi = sx, y0
     for i in range(int((ex - sx)/h+1)):
         xi = sx+i*h
         f = func(xi, yi)
-        print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}")
+        if logs:
+            print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}")
         res[0].append(xi)
         res[1].append(yi)
         yi = yi + h * f
@@ -37,7 +39,8 @@ def euler_simple(sx, ex, h, y0, func, logs=True):
 
 
 def euler_super(sx, ex, h, y0, func, count=None, logs=True):
-    print("i\tXi\t\tYi\t\t\tF(Xi,Yi)\tYi+1\t\tF(Xi+1,Yi+1)")
+    if logs:
+        print("i\tXi\t\tYi\t\t\tF(Xi,Yi)\tYi+1\t\tF(Xi+1,Yi+1)")
     res = [[], []]
     xi, yi = sx, y0
     for i in range(min(int((ex - sx)/h+1), count if count else 9999999)):
@@ -45,7 +48,8 @@ def euler_super(sx, ex, h, y0, func, count=None, logs=True):
         f = func(xi, yi)
         yi_1 = yi + h * f
         f_1 = func(sx+(i+1)*h, yi_1)
-        print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}\t\t{yi_1:.3f}\t\t{f_1:.3f}")
+        if logs:
+            print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}\t\t{yi_1:.3f}\t\t{f_1:.3f}")
         res[0].append(xi)
         res[1].append(yi)
         yi = yi + h/2 * (f + f_1)
@@ -55,7 +59,7 @@ def euler_super(sx, ex, h, y0, func, count=None, logs=True):
 def adams(sx, ex, h, y0, func, logs=True):
     tochnost = 4
     count = int((ex - sx)/h+1)
-    res = euler_super(sx, ex, h, y0, func, tochnost)
+    res = euler_super(sx, ex, h, y0, func, tochnost, logs)
     if count > tochnost:
         fu = [func(sx+h*i, res[1][i]) for i in range(tochnost-1, -1, -1)]
         yi = res[1][-1]
@@ -69,7 +73,8 @@ def adams(sx, ex, h, y0, func, logs=True):
             fu.pop(-1)
             res[0].append(xi)
             res[1].append(yi)
-            print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{fu[0]:.3f}")
+            if logs:
+                print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{fu[0]:.3f}")
     return res
 
 
