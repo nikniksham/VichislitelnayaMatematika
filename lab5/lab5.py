@@ -91,11 +91,12 @@ def gauss(func_points, need_points):
     return res
 
 
-# points = [[1, 2, 3, 4, 5], [3, 2, 4, 5, 1]]
-points = [[0.1, 0.2, 0.3, 0.4, 0.5], [1.25, 12.38, 3.79, 1.44, 7.14]]
+points = [[1, 2, 3, 4, 5], [3, 2, 4, 5, 1]]
+# points = [[0.1, 0.2, 0.3, 0.4, 0.5], [1.25, 12.38, 3.79, 1.44, 7.14]]
 # points = [[1, 2, 3, 4, 5], [4.7, 8.4, 12.3, 13.2, 13.9]]
 # points = [[0.5, 0.55, 0.60, 0.65, 0.7, 0.75, 0.8], [1.532, 2.5356, 3.5406, 4.5462, 5.5504, 6.5559, 7.5594]]
 # points = get_points_from_func(1, 10, 11, "exp(x)*cos(x)")
+# points = get_points_from_func(1, 10, 11, "sin(x)*cos(x)")
 x = get_range(min(points[0]), max(points[0]), 1000, False)
 
 h, mid = points[0][1]-points[0][0], points[0][len(points[0])//2]
