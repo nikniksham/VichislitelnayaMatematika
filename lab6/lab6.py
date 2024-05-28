@@ -1,4 +1,10 @@
 import matplotlib.pyplot as plt
+from math import cos
+
+
+def log_print(s, log):
+    if log:
+        print(s)
 
 
 def draw_graph(x, y, name="График"):
@@ -22,37 +28,65 @@ def get_table(ys):
     return table
 
 
-def euler_simple(sx, ex, h, y0, func, logs=True):
-    if logs:
-        print("i\tXi\t\tYi\t\t\tF(Xi,Yi)")
+def euler_simple(sx, ex, h, y0, func, count=None, logs=True, eps=None):
+    log_print("i\tXi\t\tYi\t\t\tF(Xi,Yi)", logs)
     res = [[], []]
     xi, yi = sx, y0
-    for i in range(int((ex - sx)/h+1)):
-        xi = sx+i*h
+    i = 0
+    while xi < ex:
+        if count and i == count:
+            break
+        if i > 2_000_000:
+            print("Не сошлося")
+            break
+        xi += h
         f = func(xi, yi)
-        if logs:
-            print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}")
+        y_loc = yi + h * f
+        if eps and i > 0 and xi < ex:
+            srav = euler_simple(xi-h/2, ex, h/2, yi, func, 2, False)[1][-1]
+            r = abs(y_loc - srav)/(2**1 - 1)
+            if r > eps:
+                xi -= h
+                h /= 4
+                log_print(f"Вот так вот", logs)
+                continue
+        log_print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}", logs)
         res[0].append(xi)
         res[1].append(yi)
-        yi = yi + h * f
+        yi = y_loc
+        i += 1
     return res
 
 
-def euler_super(sx, ex, h, y0, func, count=None, logs=True):
-    if logs:
-        print("i\tXi\t\tYi\t\t\tF(Xi,Yi)\tYi+1\t\tF(Xi+1,Yi+1)")
+def euler_super(sx, ex, h, y0, func, count=None, logs=True, eps=None):
+    log_print("i\tXi\t\tYi\t\t\tF(Xi,Yi)\tYi+1\t\tF(Xi+1,Yi+1)", logs)
     res = [[], []]
     xi, yi = sx, y0
-    for i in range(min(int((ex - sx)/h+1), count if count else 9999999)):
-        xi = sx+i*h
+    i = 0
+    while xi < ex:
+        if count and i == count:
+            break
+        if i > 2_000_000:
+            print("Не сошлося")
+            break
+        xi += h
         f = func(xi, yi)
         yi_1 = yi + h * f
         f_1 = func(sx+(i+1)*h, yi_1)
-        if logs:
-            print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}\t\t{yi_1:.3f}\t\t{f_1:.3f}")
+        y_loc = yi + h/2 * (f + f_1)
+        if eps and i > 0 and xi < ex:
+            srav = euler_super(xi-h/2, ex, h/2, yi, func, 2, False)[1][-1]
+            r = abs(y_loc - srav)/(2**2 - 1)
+            if r > eps:
+                xi -= h
+                h /= 4
+                log_print(f"Вот так вот, но это супер эйлер", logs)
+                continue
+        log_print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{f:.3f}\t\t{yi_1:.3f}\t\t{f_1:.3f}", logs)
         res[0].append(xi)
         res[1].append(yi)
-        yi = yi + h/2 * (f + f_1)
+        yi = y_loc
+        i += 1
     return res
 
 
@@ -73,24 +107,23 @@ def adams(sx, ex, h, y0, func, logs=True):
             fu.pop(-1)
             res[0].append(xi)
             res[1].append(yi)
-            if logs:
-                print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{fu[0]:.3f}")
+            log_print(f"{i}\t{xi:.3f}\t{yi:.3f}\t\t{fu[0]:.3f}", logs)
     return res
 
 
-
 # sx, ex, h = 100, 105, 0.1
-# sx, ex, h = 1, 10, 1
-# sx, ex, h = 1, 1.5, 0.1
-sx, ex, h = 0, 1, 0.1
-y0 = 1
-# func = lambda x, y: y + (1 + x) * y**2
+# sx, ex, h = 1, 100, 1
+sx, ex, h = 0, 12.5, 0.1
+# sx, ex, h = 8, 12, 0.1
+y0 = 11
+# func = lambda x, y: y + (1 + x) * y**0.3
 # func = lambda x, y: y**2 / x
 # func = lambda x, y: (x + y)/3 * x/y
 # func = lambda x, y: y + (1+x)*y**2
 func = lambda x, y: x**2 - 2*y
-draw_graph(*euler_simple(sx, ex, h, y0, func), "Простой Эйлер")
+# func = lambda x, y: cos(x)/cos(y)
+draw_graph(*euler_simple(sx, ex, h, y0, func, eps=0.1, logs=True), "Простой Эйлер")
 print("-"*100)
-draw_graph(*euler_super(sx, ex, h, y0, func), "Супер Эйлер")
+draw_graph(*euler_super(sx, ex, h, y0, func, eps=0.1), "Супер Эйлер")
 print("-"*100)
 draw_graph(*adams(sx, ex, h, y0, func), "Адамс")
